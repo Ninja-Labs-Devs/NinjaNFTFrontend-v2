@@ -5,6 +5,7 @@ import GallerySidebar from "../components/GalleryPage/GallerySidebar";
 import imagesSummary from "../abi/images_summary.json" assert { type: "json" };
 import rawFilterMap from "../abi/filter_map.json" assert { type: "json" };
 import { useLanguage } from "../context/useLanguage";
+import { resolveIpfsUrl } from "../utils/ipfs";
 import "./GalleryPage.css";
 
 type TraitCategory = string;
@@ -31,13 +32,6 @@ const traitSummary = Object.entries(filterMap).reduce(
   {} as Record<string, Record<string, number>>
 );
 const traitCategories = Object.keys(traitSummary) as TraitCategory[];
-
-const resolveImageUrl = (image: string) =>
-  image.startsWith("ipfs://")
-    ? `https://ipfs.io/ipfs/${image.slice(7)}`
-    : image;
-
-
 
 const nftTraitLookup: Record<number, TraitMapRecord> = {};
 Object.entries(filterMap).forEach(
@@ -67,7 +61,7 @@ const nftList = (imagesSummary as Array<{ edition: number; image: string }>).map
       id: edition,
       visualId: nftNumber,
       name: `NINJ4 #${nftNumber.toString().padStart(3, '0')}`,
-      image: resolveImageUrl(image),
+      image: resolveIpfsUrl(image),
       traits: nftTraitLookup[nftNumber] || ({} as TraitMapRecord),
     };
   }

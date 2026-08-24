@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../context/useLanguage";
 import imagesSummary from "../abi/images_summary.json" assert { type: "json" };
 import config from "../config";
+import { fetchIpfsJson, resolveIpfsUrl } from "../utils/ipfs";
 
 type Attribute = {
   trait_type: string;
@@ -24,9 +25,6 @@ type SummaryEntry = {
 };
 
 const summaryEntries = imagesSummary as SummaryEntry[];
-
-const resolveIpfsUrl = (url?: string) =>
-  url?.startsWith("ipfs://") ? `https://ipfs.io/ipfs/${url.slice(7)}` : url;
 
 type ErrorKey = "missingId" | "notFound" | "loadFailed" | null;
 
@@ -73,8 +71,7 @@ function NFTDetailPage() {
       return;
     }
 
-    const metadataUrl = resolveIpfsUrl(summaryEntry.metadata);
-    if (!metadataUrl) {
+    if (!summaryEntry.metadata) {
       setErrorKey("loadFailed");
       setMetadata(null);
       return;
@@ -84,11 +81,7 @@ function NFTDetailPage() {
 
     const fetchMetadata = async () => {
       try {
-        const response = await fetch(metadataUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch metadata: ${response.status}`);
-        }
-        const data = (await response.json()) as Metadata;
+        const data = await fetchIpfsJson<Metadata>(summaryEntry.metadata);
         if (!cancelled) {
           setMetadata(data);
           setErrorKey(null);

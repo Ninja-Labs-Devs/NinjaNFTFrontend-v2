@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useMemo } from "react";
 import imagesSummary from "../../abi/images_summary.json" assert { type: "json" };
 import filterMap from "../../abi/filter_map.json" assert { type: "json" };
+import { resolveIpfsUrl } from "../../utils/ipfs";
 
 type NFTLevel = "white" | "purple";
 
@@ -23,11 +24,6 @@ interface NFTShowcaseProps {
   buyLabel?: string;
   viewAllLabel?: string;
 }
-
-const resolveImageUrl = (image: string) =>
-  image.startsWith("ipfs://")
-    ? `https://ipfs.io/ipfs/${image.slice(7)}`
-    : image;
 
 function NFTShowcase({
   count = 18,
@@ -52,7 +48,7 @@ function NFTShowcase({
         id: edition,
         visualId,
         name: `NINJ4 #${visualId}`,
-        image: resolveImageUrl(image),
+        image: resolveIpfsUrl(image),
         level,
       };
     });
