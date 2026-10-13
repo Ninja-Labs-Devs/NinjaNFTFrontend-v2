@@ -19,6 +19,28 @@ export type PublicProject = {
 
 export const PUBLIC_PROJECTS: PublicProject[] = [
   {
+    id: "maneki-ai",
+    kind: "community",
+    title: "Maneki AI",
+    descriptionZh: "新星计划冠军，可解释的 AI 永续交易代理，支持 INJ 支付 AI 服务；当前交易执行主要在 Hyperliquid。",
+    descriptionEn: "Nova Program winner building explainable AI trading agents with INJ service payments. Trade execution currently runs mainly on Hyperliquid.",
+    image: "/optimized/community/maneki-ai-1200-v1.webp",
+    tags: ["AI Agents", "Nova"],
+    status: "beta", statusZh: "早期产品", statusEn: "Early stage",
+    href: "https://manekiai.io/", external: true,
+  },
+  {
+    id: "olaxbt",
+    kind: "community",
+    title: "OlaXBT",
+    descriptionZh: "新星计划季军，通过桌面 AI 助手硬件连接 Agent 应用与通知，展示 Injective 交易代理场景。",
+    descriptionEn: "Third-place Nova team exploring a desk-side AI device for agent apps and notifications, including Injective trading-agent use cases.",
+    image: "/optimized/community/olaxbt-1200-v1.webp",
+    tags: ["AI Hardware", "Nova"],
+    status: "prototype", statusZh: "项目展示", statusEn: "Showcase",
+    href: "https://olaxbt.xyz/", external: true,
+  },
+  {
     id: "metaloft",
     kind: "project",
     title: "Metaloft",

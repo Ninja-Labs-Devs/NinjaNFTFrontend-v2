@@ -65,6 +65,7 @@ function NewsDetailPage() {
             className="news-detail-hero"
             src={item.image}
             ratio="16 / 9"
+            objectFit={item.imageFit}
             label={t(item.imageLabel.zh, item.imageLabel.en)}
           />
         ) : (
@@ -76,6 +77,7 @@ function NewsDetailPage() {
 
         <div className="news-detail-copy">
           <p className="news-detail-summary">{t(item.summary.zh, item.summary.en)}</p>
+          {item.body?.[language].map((paragraph, index) => <p key={index} className="news-detail-summary">{paragraph}</p>)}
           <p className="news-detail-note">
             {t(
               "这是 CITY DISPATCH 的编辑导读。活动状态、产品参数和监管信息可能变化，请以原始发布方的最新说明为准。",
@@ -91,6 +93,14 @@ function NewsDetailPage() {
             <span className="news-detail-source-link-arrow" aria-hidden="true">↗</span>
           </a>
         )}
+
+        {item.references?.map((reference) => (
+          <a key={reference.url} className="news-detail-source-link" href={reference.url} target="_blank" rel="noopener noreferrer">
+            <span className="news-detail-source-link-label">{t("补充来源", "Further source")}</span>
+            <span className="news-detail-source-link-url">{t(reference.label.zh, reference.label.en)}</span>
+            <span className="news-detail-source-link-arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
 
         {related.length > 0 && (
           <section className="news-detail-related">

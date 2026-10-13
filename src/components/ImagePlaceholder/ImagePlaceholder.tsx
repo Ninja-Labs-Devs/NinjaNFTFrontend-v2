@@ -20,6 +20,7 @@ interface ImagePlaceholderProps {
   src?: string;
   /** 图片在容器内的裁切焦点 */
   objectPosition?: string;
+  objectFit?: "cover" | "contain";
   /** img loading 策略 (首屏外的远程大图建议 "lazy") */
   loading?: "lazy" | "eager";
 }
@@ -31,6 +32,7 @@ function ImagePlaceholder({
   iconOnly = false,
   src,
   objectPosition,
+  objectFit,
   loading,
 }: ImagePlaceholderProps) {
   if (src) {
@@ -45,7 +47,7 @@ function ImagePlaceholder({
         <img
           src={src}
           alt={label}
-          style={{ objectPosition }}
+          style={{ objectPosition, objectFit }}
           loading={loading}
           decoding="async"
         />

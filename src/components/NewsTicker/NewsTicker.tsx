@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../../context/useLanguage";
-import { FEATURED_NEWS, NEWS } from "../../data/news";
+import type { NewsItem } from "../../data/news";
+import { getRecentNews, RECENT_WINDOW_DAYS } from "../../data/newsSelection";
+import { useNewsDate } from "../../hooks/useNewsDate";
 import ImagePlaceholder from "../ImagePlaceholder/ImagePlaceholder";
 import "./NewsTicker.css";
 
 const ROTATE_MS = 3000;
 const SLOT_COUNT = 3;
-const RECENT_WINDOW_DAYS = 60;
 
 const statusText = {
   active: { zh: "进行中", en: "Active" },
@@ -16,24 +17,20 @@ const statusText = {
   evergreen: { zh: "长期阅读", en: "Evergreen" },
 } as const;
 
-const recentCutoff = Date.now() - RECENT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
-const recentNews = NEWS.filter((item) => new Date(`${item.publishedAt}T00:00:00`).getTime() >= recentCutoff);
-const tickerPool = recentNews.length >= SLOT_COUNT ? recentNews : NEWS.slice(0, SLOT_COUNT);
-
-// Keep eligible editorial picks first, then continue through recent dispatches.
-const TICKER_NEWS = [
-  ...FEATURED_NEWS.filter((featured) => tickerPool.some((item) => item.id === featured.id)),
-  ...tickerPool.filter((item) => !FEATURED_NEWS.some((featured) => featured.id === item.id)),
-];
-
 function NewsTicker() {
+  const now = useNewsDate();
+  const items = getRecentNews(now);
+  return <NewsTickerContent key={items.map((item) => item.id).join(",")} items={items} />;
+}
+
+function NewsTickerContent({ items: TICKER_NEWS }: { items: NewsItem[] }) {
   const { language } = useLanguage();
   const t = (zh: string, en: string) => (language === "zh" ? zh : en);
   const [track, setTrack] = useState<number[]>(() =>
     Array.from({ length: Math.min(SLOT_COUNT, TICKER_NEWS.length) }, (_, index) => index),
   );
   const [shifting, setShifting] = useState(false);
-  const nextRef = useRef(SLOT_COUNT % TICKER_NEWS.length);
+  const nextRef = useRef(SLOT_COUNT % Math.max(1, TICKER_NEWS.length));
   const trackEl = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,7 +60,7 @@ function NewsTicker() {
     }, ROTATE_MS);
 
     return () => window.clearInterval(timer);
-  }, []);
+  }, [TICKER_NEWS.length]);
 
   useLayoutEffect(() => {
     if (track.length <= SLOT_COUNT) return;
@@ -127,6 +124,7 @@ function NewsTicker() {
                         ratio="16 / 9"
                         label={t(item.imageLabel.zh, item.imageLabel.en)}
                         loading="lazy"
+                        objectFit={item.imageFit}
                       />
                     </div>
                     <div className="news-tk-meta">

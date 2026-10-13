@@ -5,6 +5,8 @@ export type OpenRepo = {
   description: string;
   descriptionZh?: string;
   descriptionEn?: string;
+  featuresZh?: string;
+  featuresEn?: string;
   imageSrc: string;
   tags: string[];
   githubRepo: string;
@@ -15,6 +17,42 @@ export type OpenRepo = {
 // Curated display order. Add future repos at the top so City Zero's limited preview
 // remains current while the archive keeps every entry.
 export const OPEN_REPOS: OpenRepo[] = [
+  {
+    title: "Peggy MTS Token Launch",
+    featuresZh: "包含 ERC20 部署与验证、Peggy 桥接检查、Injective Native 到 EVM MTS 表示的创建流程，以及元数据配置说明。使用前需按 README 核对源链、网络与合约配置；不是任意 EVM 网络的通用桥。",
+    featuresEn: "Covers ERC20 deployment and verification, Peggy bridge checks, creation of an EVM MTS representation, and metadata configuration. Check the source chain, network, and contracts in the README before use; this is not a universal bridge for arbitrary EVM networks.",
+    description: "A developer workflow for bridging an Ethereum ERC20 through Peggy to Injective Native and creating its EVM MTS representation.",
+    descriptionZh: "将配置好的 Ethereum 源链 ERC20 经 Peggy 桥接至 Injective Native，再创建 EVM MTS 表示的开发流程，附脚本、模板与验证说明。",
+    descriptionEn: "A developer workflow for bridging an Ethereum ERC20 through Peggy to Injective Native and creating its EVM MTS representation, with scripts, templates, and verification steps.",
+    imageSrc: "/repo-covers/peggy-mts.svg",
+    tags: ["Peggy", "MTS", "EVM"],
+    githubRepo: "Ninja-Labs-Devs/injective-peggy-mts-token-launch",
+    status: "STARTER",
+  },
+  {
+    title: "Injective x402 Tutorial",
+    featuresZh: "按环境准备、后端与前端分步讲解付费解锁内容。React 客户端与 Node.js 服务端展示 x402 请求和支付流程，适合学习钱包与 Agent 访问付费资源的实现方式。",
+    featuresEn: "A step-by-step guide through setup, backend, and frontend for paid content access. The React client and Node.js server demonstrate x402 requests and payment flows for wallets and agents accessing paid resources.",
+    description: "A pay-to-unlock content tutorial on Injective with a React frontend, Node.js backend, and a step-by-step x402 workflow.",
+    descriptionZh: "Injective 上的 x402 付费解锁内容教程，包含 React 前端、Node.js 后端及逐步说明，适合学习钱包与 Agent 的按请求支付。",
+    descriptionEn: "A pay-to-unlock content tutorial on Injective with a React frontend, Node.js backend, and step-by-step guidance for wallet and agent payments.",
+    imageSrc: "/optimized/repos/x402-tutorial-1200-v1.webp",
+    tags: ["x402", "React", "Node.js"],
+    githubRepo: "Ninja-Labs-Devs/injective-x402-tutorial",
+    status: "TUTORIAL",
+  },
+  {
+    title: "Injective × Cointelegraph Workshop",
+    featuresZh: "包括环境准备、Counter 合约、前端交互、MultiVM Token 示例及现货市场预言机脚本。按课程模块学习和复用代码；这是教学资料集合，不是面向最终用户的已上线应用。",
+    featuresEn: "Includes setup, a Counter contract, frontend interactions, MultiVM Token examples, and spot-market oracle scripts. Explore the code by workshop module; this is a teaching collection rather than a live consumer application.",
+    description: "Workshop examples for smart contracts, dApps, MultiVM Tokens, and spot-market oracle workflows on Injective.",
+    descriptionZh: "Injective × Cointelegraph 工作坊示例，覆盖智能合约、dApp、MultiVM Token 与现货市场预言机，包含 Solidity、前端代码及部署脚本。",
+    descriptionEn: "Workshop examples covering smart contracts, dApps, MultiVM Tokens, and spot-market oracles, with Solidity contracts, frontend code, and deployment scripts.",
+    imageSrc: "/repo-covers/cointelegraph-workshop.svg",
+    tags: ["Solidity", "MTS", "Oracles"],
+    githubRepo: "Ninja-Labs-Devs/cointelegraph-workshop",
+    status: "TUTORIAL",
+  },
   {
     title: "N1NJ4 Website",
     description: "Production frontend for N1NJ4 and City Zero, bringing together on-chain identity, the NFT gallery, City Dispatch, events, and community project discovery.",

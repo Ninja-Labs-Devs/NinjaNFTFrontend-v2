@@ -9,6 +9,8 @@ import {
 import "../components/PublicPage/PublicPage.css";
 import { useLanguage } from "../context/useLanguage";
 import { NEWS, type NewsStatus } from "../data/news";
+import { getRecentNews } from "../data/newsSelection";
+import { useNewsDate } from "../hooks/useNewsDate";
 import { PUBLIC_PROJECTS } from "../data/publicProjects";
 import { STADIUM_EVENTS, type StadiumEventStatus } from "../data/stadiumEvents";
 import "./HomePage.css";
@@ -101,7 +103,8 @@ function HomePage() {
     meta: project.tags.join(" · "),
   }));
 
-  const dispatchPreview = NEWS.slice(0, HOME_DISPATCH_PREVIEW_LIMIT);
+  const now = useNewsDate();
+  const dispatchPreview = getRecentNews(now).slice(0, HOME_DISPATCH_PREVIEW_LIMIT);
   const [activeDispatchId, setActiveDispatchId] = useState(dispatchPreview[0]?.id ?? "");
   const activeDispatch = dispatchPreview.find((item) => item.id === activeDispatchId) ?? dispatchPreview[0];
 
@@ -309,7 +312,7 @@ function HomePage() {
                 aria-live="polite"
               >
                 <div className="home-dispatch-feature__media">
-                  {activeDispatch.image && <img src={activeDispatch.image} alt={t(activeDispatch.imageLabel.zh, activeDispatch.imageLabel.en)} loading="lazy" />}
+                  {activeDispatch.image && <img src={activeDispatch.image} alt={t(activeDispatch.imageLabel.zh, activeDispatch.imageLabel.en)} loading="lazy" decoding="async" style={{ objectFit: activeDispatch.imageFit }} />}
                 </div>
                 <div className="home-dispatch-feature__copy">
                   <div className="home-dispatch-feature__topline">
@@ -349,6 +352,7 @@ function HomePage() {
             </div>
           </div>
           <div className="home-dispatch__footer">
+            {dispatchPreview.length === 0 && <p>{t("近60天暂无新快报，历史内容仍可在新闻库中阅读。", "No new dispatches in the past 60 days. Earlier stories remain in the library.")}</p>}
             <Link to="/news" className="home-dispatch__library">{t(`查看全部 ${NEWS.length} 条快报`, `View all ${NEWS.length} dispatches`)} <ArrowIcon /></Link>
           </div>
         </div>

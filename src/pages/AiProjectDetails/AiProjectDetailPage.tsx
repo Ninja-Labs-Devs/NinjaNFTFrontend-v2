@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import { OPEN_REPOS } from '../../data/openRepos';
+import { useLanguage } from '../../context/useLanguage';
 import './AiProjectDetailPage.css';
 
 // Type definitions based on GitHub API response
@@ -97,6 +99,9 @@ const CONTRIBUTOR_COLOR_PALETTE = ['#57a8d4', '#86efac', '#fcd34d', '#f87171', '
 const AiProjectDetailPage: React.FC = () => {
     const { owner, repo } = useParams<{ owner: string, repo: string }>();
     const location = useLocation();
+    const { language } = useLanguage();
+    const t = (zh: string, en: string) => language === 'zh' ? zh : en;
+    const curated = OPEN_REPOS.find((item) => item.githubRepo.toLowerCase() === `${owner}/${repo}`.toLowerCase());
     const [stats, setStats] = useState<GithubStats | null>(null);
     const [detailData, setDetailData] = useState<DetailPageData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -111,7 +116,7 @@ const AiProjectDetailPage: React.FC = () => {
         return AI_EXPERIENCE_IMAGE_POOL[Math.abs(hash) % AI_EXPERIENCE_IMAGE_POOL.length];
     };
     const routeImage = (location.state as { imageSrc?: string } | null)?.imageSrc;
-    const heroImage = routeImage || getStableImageByRepo(`${owner || ''}/${repo || ''}`);
+    const heroImage = curated?.imageSrc || routeImage || getStableImageByRepo(`${owner || ''}/${repo || ''}`);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -464,12 +469,17 @@ const AiProjectDetailPage: React.FC = () => {
     const formatDate = (dateString?: string) => {
         if (!dateString) return '';
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        return date.toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US', { month: 'short', year: 'numeric' });
     };
-    const sheetDescription = (detailData?.description || '').trim();
+    const sheetDescription = curated
+        ? t(curated.descriptionZh || curated.description, curated.descriptionEn || curated.description)
+        : (detailData?.description || '').trim();
+    const features = curated?.featuresZh && curated.featuresEn
+        ? t(curated.featuresZh, curated.featuresEn)
+        : detailData?.keyFeaturesText?.trim();
 
     if (loading) {
-        return <div className="ai-project-detail-loading">Loading project details...</div>;
+        return <div className="ai-project-detail-loading">{t('正在加载项目详情…', 'Loading project details…')}</div>;
     }
 
     return (
@@ -483,14 +493,14 @@ const AiProjectDetailPage: React.FC = () => {
                 <div className="ai-project-header-row">
                     <div className="ai-project-titles">
                         <h1 className="ai-project-title">
-                            {detailData?.projectName || repo}
+                            {curated?.title || detailData?.projectName || repo}
                         </h1>
                         <div className="ai-project-author">
-                            by <span className="author-name">{detailData?.author || owner}</span>
+                            {t('来自', 'by')} <span className="author-name">{detailData?.author || owner}</span>
                         </div>
                         
                         <div className="ai-project-tags">
-                            {(detailData?.tags || []).map((tag, idx) => (
+                            {(curated?.tags || detailData?.tags || []).map((tag, idx) => (
                                 <span key={idx} className="ai-project-tag-pill">{tag}</span>
                             ))}
                         </div>
@@ -506,7 +516,7 @@ const AiProjectDetailPage: React.FC = () => {
                             <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="github-icon">
                                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                             </svg>
-                            View on GitHub
+                            {t('在 GitHub 查看', 'View on GitHub')}
                         </a>
                     </div>
                 </div>
@@ -519,7 +529,7 @@ const AiProjectDetailPage: React.FC = () => {
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                             </svg>
                             <span className="detail-status-value">{formatNumber(stats?.stargazers_count)}</span>
-                            <span className="detail-status-label">Stars</span>
+                            <span className="detail-status-label">{t('星标', 'Stars')}</span>
                         </div>
 
                         <div className="detail-status-item">
@@ -530,7 +540,7 @@ const AiProjectDetailPage: React.FC = () => {
                                 <path d="M18 9a9 9 0 0 1-9 9"></path>
                             </svg>
                             <span className="detail-status-value">{formatNumber(stats?.forks_count)}</span>
-                            <span className="detail-status-label">Forks</span>
+                            <span className="detail-status-label">{t('分叉', 'Forks')}</span>
                         </div>
 
                         <div className="detail-status-item">
@@ -539,7 +549,7 @@ const AiProjectDetailPage: React.FC = () => {
                                 <circle cx="12" cy="12" r="3"></circle>
                             </svg>
                             <span className="detail-status-value">{formatNumber(stats?.subscribers_count)}</span>
-                            <span className="detail-status-label">Watchers</span>
+                            <span className="detail-status-label">{t('关注', 'Watchers')}</span>
                         </div>
 
                         {(detailData?.statusTechMeta || []).map((tech) => (
@@ -557,8 +567,8 @@ const AiProjectDetailPage: React.FC = () => {
                             <circle cx="12" cy="12" r="10"></circle>
                             <polyline points="12 6 12 12 16 14"></polyline>
                         </svg>
-                        <span className="detail-status-label">Updated</span>
-                        <span className="detail-status-value detail-time-value">{formatDate(stats?.updated_at) || 'Mar 2026'}</span>
+                        <span className="detail-status-label">{t('更新于', 'Updated')}</span>
+                        <span className="detail-status-value detail-time-value">{formatDate(stats?.updated_at) || '—'}</span>
                     </div>
                 </div>
 
@@ -567,24 +577,24 @@ const AiProjectDetailPage: React.FC = () => {
                     {/* Left Column: Description & Screenshots */}
                     <div className="ai-project-left-col">
                         <section className="detail-section">
-                            <h4 className="detail-section-label">PROJECT DESCRIPTION</h4>
-                            <h2 className="detail-main-title">{detailData?.projectName || repo}</h2>
+                            <h4 className="detail-section-label">{t('项目介绍', 'PROJECT DESCRIPTION')}</h4>
+                            <h2 className="detail-main-title">{curated?.title || detailData?.projectName || repo}</h2>
                             <div className="detail-description-text">
                                 {sheetDescription
                                     ? sheetDescription.split('\n').map((para, i) => <p key={i}>{para}</p>)
-                                    : <p>Please fill `Description` in Google Sheet.</p>}
+                                    : <p>{t('请在仓库文档中查看项目介绍。', 'See the repository documentation for a project introduction.')}</p>}
                             </div>
                         </section>
 
                         <section className="detail-section key-features-section">
-                            <h4 className="detail-section-label">KEY FEATURES</h4>
+                            <h4 className="detail-section-label">{t('主要内容', 'KEY FEATURES')}</h4>
                             <div className="key-features-paragraph">
-                                {detailData?.keyFeaturesText?.trim() || 'Please fill `Key Features` in Google Sheet.'}
+                                {features || t('详细功能及使用步骤请参考仓库 README。', 'See the repository README for features and usage instructions.')}
                             </div>
                         </section>
 
                         <section className="detail-section contribution-section">
-                            <h4 className="detail-section-label">CONTRIBUTION PROGRESS</h4>
+                            <h4 className="detail-section-label">{t('贡献记录', 'CONTRIBUTION PROGRESS')}</h4>
                             <div className="contribution-timeline">
                                 {(detailData?.contributionProgress || []).map((item, idx, arr) => (
                                     <div key={`${item.step}-${item.tag}`} className="timeline-row done">
@@ -612,8 +622,8 @@ const AiProjectDetailPage: React.FC = () => {
                                 ))}
                                 {(detailData?.contributionProgress || []).length === 0 && (
                                     <div className="timeline-open-card">
-                                        <h5>No commits yet</h5>
-                                        <p>Commit activity will appear here once the repository has contribution history.</p>
+                                        <h5>{t('暂无可显示的提交记录', 'No commit activity available')}</h5>
+                                        <p>{t('可在 GitHub 查看完整提交历史。', 'View the full commit history on GitHub.')}</p>
                                     </div>
                                 )}
                             </div>
@@ -623,31 +633,31 @@ const AiProjectDetailPage: React.FC = () => {
                     {/* Right Column: Sidebar */}
                     <aside className="ai-project-sidebar">
                         <div className="sidebar-widget">
-                            <h4 className="widget-title">REPOSITORY STATS</h4>
+                            <h4 className="widget-title">{t('仓库统计', 'REPOSITORY STATS')}</h4>
                             <div className="stats-grid">
                                 <div className="stat-card">
                                     <span className="stat-card-value">{formatNumber(stats?.stargazers_count)}</span>
                                     <div className="stat-card-label">
-                                        <span className="star-dot">⭐</span> Stars
+                                        <span className="star-dot">⭐</span> {t('星标', 'Stars')}
                                     </div>
                                 </div>
                                 <div className="stat-card">
                                     <span className="stat-card-value">{formatNumber(stats?.forks_count)}</span>
                                     <div className="stat-card-label">
-                                        <span className="fork-icon-small">ψ</span> Forks
+                                        <span className="fork-icon-small">ψ</span> {t('分叉', 'Forks')}
                                     </div>
                                 </div>
                                 <div className="stat-card">
                                     <span className="stat-card-value">{stats?.open_issues_count || 0}</span>
                                     <div className="stat-card-label">
-                                        <span className="issue-icon-small">⚙️</span> Issues
+                                        <span className="issue-icon-small">⚙️</span> {t('议题', 'Issues')}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="sidebar-widget">
-                            <h4 className="widget-title">TECH STACK</h4>
+                            <h4 className="widget-title">{t('技术栈', 'TECH STACK')}</h4>
                             <div className="tech-stack-list">
                                 {(detailData?.techStack || []).map((tech, i) => (
                                     <div key={i} className="tech-stack-item">
@@ -672,7 +682,7 @@ const AiProjectDetailPage: React.FC = () => {
                         </div>
 
                         <div className="sidebar-widget">
-                            <h4 className="widget-title">CONTRIBUTORS</h4>
+                            <h4 className="widget-title">{t('贡献者', 'CONTRIBUTORS')}</h4>
                             <div className="contributors-list">
                                 {(detailData?.contributors || []).map((c, i) => (
                                     <div key={i} className="contributor-item">
@@ -682,7 +692,7 @@ const AiProjectDetailPage: React.FC = () => {
                                         <div className="contributor-info">
                                             <div className="contributor-name">{c.name}</div>
                                             <div className="contributor-role-desc">
-                                                {c.contributions} contributions
+                                                {c.contributions} {t('次贡献', 'contributions')}
                                             </div>
                                         </div>
                                     </div>
@@ -691,18 +701,18 @@ const AiProjectDetailPage: React.FC = () => {
                         </div>
 
                         <div className="sidebar-widget">
-                            <h4 className="widget-title">LICENSE</h4>
+                            <h4 className="widget-title">{t('许可', 'LICENSE')}</h4>
                             <div className="license-card">
                                 <div className="license-icon">⚖️</div>
                                 <div className="license-content">
-                                    <div className="license-name">{detailData?.licenseName || 'No license'}</div>
-                                    <div className="license-description">{detailData?.licenseDescription || 'License information from GitHub metadata.'}</div>
+                                    <div className="license-name">{detailData?.licenseName || t('未获取', 'Unavailable')}</div>
+                                    <div className="license-description">{t('许可信息来自 GitHub，具体使用条件请阅读仓库许可证。', 'License information comes from GitHub. Read the repository license for usage terms.')}</div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="sidebar-widget">
-                            <h4 className="widget-title">MORE AI EXPERIMENT PROJECTS</h4>
+                            <h4 className="widget-title">{t('更多开放项目', 'MORE OPEN PROJECTS')}</h4>
                             <div className="more-projects-list">
                                 {(detailData?.moreProjects || []).map((project) => (
                                     <Link key={project.repo} to={`/ai-project/${project.repo}`} className="more-project-card">
@@ -722,7 +732,7 @@ const AiProjectDetailPage: React.FC = () => {
                 </div>
 
                 <Link to="/city-zero" className="ai-project-back-cityzero-btn ai-project-back-cityzero-btn-bottom">
-                    ← Back to City Zero
+                    ← {t('返回 City Zero', 'Back to City Zero')}
                 </Link>
             </div>
         </div>

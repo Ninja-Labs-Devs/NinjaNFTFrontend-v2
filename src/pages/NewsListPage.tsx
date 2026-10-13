@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import ImagePlaceholder from "../components/ImagePlaceholder/ImagePlaceholder";
 import { useLanguage } from "../context/useLanguage";
 import { NEWS, type NewsSection, type NewsStatus } from "../data/news";
+import { getNewsSections } from "../data/newsSelection";
+import { useNewsDate } from "../hooks/useNewsDate";
 import "./NewsListPage.css";
 
 type NewsView = "all" | NewsSection;
@@ -25,18 +27,19 @@ const statusLabels: Record<NewsStatus, { zh: string; en: string }> = {
 function NewsListPage() {
   const { language } = useLanguage();
   const [view, setView] = useState<NewsView>("all");
+  const now = useNewsDate();
   const t = (zh: string, en: string) => (language === "zh" ? zh : en);
 
   const items = useMemo(() => {
-    const selected = view === "all" ? NEWS : NEWS.filter((item) => item.sections.includes(view));
+    const selected = view === "all" ? NEWS : NEWS.filter((item) => getNewsSections(item, now).includes(view));
     return [...selected].sort((a, b) => {
       const dateOrder = a.publishedAt.localeCompare(b.publishedAt);
       return view === "storyline" ? dateOrder : -dateOrder;
     });
-  }, [view]);
+  }, [view, now]);
 
   const viewCount = (key: NewsView) =>
-    key === "all" ? NEWS.length : NEWS.filter((news) => news.sections.includes(key)).length;
+    key === "all" ? NEWS.length : NEWS.filter((news) => getNewsSections(news, now).includes(key)).length;
 
   return (
     <div className="news-list-page">
@@ -90,6 +93,7 @@ function NewsListPage() {
                     ratio="16 / 9"
                     label={t(item.imageLabel.zh, item.imageLabel.en)}
                     loading="lazy"
+                    objectFit={item.imageFit}
                   />
                 ) : (
                   <span className="news-library-art" aria-hidden="true" />

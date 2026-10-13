@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780">
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0b0c16"/><stop offset="1" stop-color="#242038"/></linearGradient></defs>
+  <rect width="1200" height="780" fill="url(#bg)"/>
+  <g stroke="#c8c3ff" opacity=".12"><path d="M0 130h1200M0 260h1200M0 390h1200M0 520h1200M0 650h1200M150 0v780M300 0v780M450 0v780M600 0v780M750 0v780M900 0v780M1050 0v780"/></g>
+  <text x="70" y="90" fill="#ccc289" font-family="Arial,sans-serif" font-size="27" font-weight="700" letter-spacing="5">HANDS-ON DEVELOPER WORKSHOP</text>
+  <g fill="#171829" stroke="#81768b" stroke-width="2"><rect x="70" y="190" width="505" height="130" rx="20"/><rect x="605" y="190" width="525" height="130" rx="20"/><rect x="70" y="345" width="505" height="130" rx="20"/><rect x="605" y="345" width="525" height="130" rx="20"/></g>
+  <g font-family="Arial,sans-serif" font-size="33" font-weight="700" fill="white"><text x="108" y="270">01  SMART CONTRACTS</text><text x="645" y="270">02  dAPPS</text><text x="108" y="425">03  MULTIVM TOKENS</text><text x="645" y="425">04  MARKET ORACLES</text></g>
+  <text x="70" y="582" fill="#f4d562" font-family="Arial,sans-serif" font-size="30" font-weight="700">INJECTIVE × COINTELEGRAPH</text>
+  <text x="70" y="664" fill="white" font-family="Arial,sans-serif" font-size="72" font-weight="800">BUILD. TEST. UNDERSTAND.</text>
+  <text x="70" y="718" fill="#aaa3c9" font-family="Arial,sans-serif" font-size="22">NINJA LABS DEVS · TUTORIAL</text>
+</svg>

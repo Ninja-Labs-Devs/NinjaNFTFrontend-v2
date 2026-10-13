@@ -5,6 +5,8 @@
  * and the wider Injective ecosystem. Full articles remain at source.
  * ==================================================================== */
 
+import { OCTOBER_2026_NEWS } from "./news202610";
+
 export type NewsCat =
   | "dev"
   | "trading"
@@ -29,11 +31,14 @@ export interface NewsItem {
   title: { zh: string; en: string };
   summary: { zh: string; en: string };
   image?: string;
+  imageFit?: "cover" | "contain";
   imageLabel: { zh: string; en: string };
+  body?: { zh: string[]; en: string[] };
+  references?: Array<{ label: { zh: string; en: string }; url: string }>;
   sections: NewsSection[];
   status: NewsStatus;
   series?: "nova-program";
-  featuredRank?: 1 | 2 | 3;
+  featuredRank?: number;
   originalLanguage?: "zh" | "en";
   originalAuthor?: { zh: string; en: string };
 }
@@ -50,6 +55,7 @@ const cat = {
 } as const;
 
 export const NEWS: NewsItem[] = [
+  ...OCTOBER_2026_NEWS,
   {
     id: "injective-co-learning-camps-2026",
     catKey: "dev",
@@ -70,7 +76,6 @@ export const NEWS: NewsItem[] = [
     imageLabel: { zh: "HackQuest 共学营", en: "HackQuest Co-Learning Camps" },
     sections: ["latest", "storyline"],
     status: "recap",
-    featuredRank: 2,
     originalLanguage: "en",
     originalAuthor: { zh: "HackQuest", en: "HackQuest" },
   },
@@ -97,7 +102,6 @@ export const NEWS: NewsItem[] = [
     imageLabel: { zh: "Injective Global Cup 赛后专题", en: "Injective Global Cup retrospective" },
     sections: ["latest", "storyline"],
     status: "recap",
-    featuredRank: 1,
     originalLanguage: "en",
     originalAuthor: { zh: "HackQuest", en: "HackQuest" },
   },
@@ -145,7 +149,6 @@ export const NEWS: NewsItem[] = [
     sections: ["latest", "storyline"],
     status: "recap",
     series: "nova-program",
-    featuredRank: 3,
     originalLanguage: "zh",
     originalAuthor: { zh: "web3labs.club", en: "web3labs.club" },
   },
@@ -165,7 +168,13 @@ export const NEWS: NewsItem[] = [
       zh: "Injective 以首席赞助方身份参与 AdventureX 2026，支持年轻开发者探索 Injective、AI 与链上应用的创意边界。Ninja Labs 发起人 Vincent Jin 参与现场技术指导与生态对接。",
       en: "Injective joined AdventureX 2026 as a lead sponsor, backing young developers exploring the intersection of Injective, AI, and onchain applications. Ninja Labs founder Vincent Jin took part in technical guidance and ecosystem connections on site.",
     },
-    image: "/optimized/news/adventurex-2026-1280-v1.webp",
+    body: {
+      zh: ["8 月 15 日，INJ建设者发布后续回顾《新一代建设者，正式登场》，记录 7 月 22—26 日 AdventureX 的开发者实践，以及 Injective 在 7 月 25 日举办的 AI 与链上应用工作坊。", "回顾介绍了超过 50 份 Injective 相关项目提交，并提到 INJPass 与 MetaLoft 在社区支持下持续迭代，呈现年轻建设者从现场创意到后续开发的探索。"],
+      en: ["On August 15, INJ Builders published a follow-up retrospective covering the July 22–26 AdventureX gathering and Injective's July 25 workshop on AI and onchain applications.", "The retrospective describes more than 50 Injective-related submissions and continued development of INJPass and MetaLoft with community support, following young builders from ideas at the event into ongoing development."],
+    },
+    references: [{ label: { zh: "INJ建设者后续回顾 · 2026.08.15", en: "INJ Builders retrospective · August 15, 2026" }, url: "https://mp.weixin.qq.com/s/hqvnjXgyd-Mkh1LV0xf0Pw" }],
+    image: "/optimized/news/adventurex-recap-1600-v1.webp",
+    imageFit: "contain",
     imageLabel: { zh: "AdventureX 2026 活动现场", en: "AdventureX 2026" },
     sections: ["latest", "archive"],
     status: "recap",
